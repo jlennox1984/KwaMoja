@@ -9,6 +9,13 @@ echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-
 			<tr>
 				<td>' . _('Database Type') . '</td>';
 echo '<td><select name="DBMS" id="select">';
+
+if ($_SESSION['Install']['DatabaseType']=='') {
+	echo '<option selected="selected" value=""></option>';
+} else {
+	echo '<option value=""></option>';
+}
+
 foreach ($PotentialDBMS as $DBMS) {
 	if ($_SESSION['Install']['DatabaseType']==$DBMS) {
 		echo '<option selected="selected" value="' . $DBMS . '">' . $DBMS . '</option>';

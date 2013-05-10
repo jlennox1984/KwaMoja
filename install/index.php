@@ -37,15 +37,15 @@ $CompanyPath = $PathToRoot. '/companies';
 
 /*Set default values to all the session variables needed */
 
-$PotentialDBMS = array('mysql', 'mysqli');
+$PotentialDBMS = array('mariadb', 'mysqli');
 
 if (!isset($_SESSION['Install']['OperatingSystem'])) {
 	$_SESSION['Install']['OperatingSystem'] = PHP_OS;
-	$_SESSION['Install']['DatabaseType'] = 'mysqli';
+	$_SESSION['Install']['DatabaseType'] = '';
 	$_SESSION['Install']['DatabaseHost'] = 'localhost';
 	$_SESSION['Install']['DatabaseUser'] = 'root';
 	$_SESSION['Install']['DatabasePassword'] = '';
-	$_SESSION['Install']['DatabaseName'] = 'KwaMoja';
+	$_SESSION['Install']['DatabaseName'] = 'kwamoja';
 	$_SESSION['Install']['DatabasePort'] = 0;
 	$_SESSION['Install']['UserID'] = 'admin';
 	$_SESSION['Install']['Password'] = 'kwamoja';
