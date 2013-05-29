@@ -64,7 +64,7 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.or
 <body>';
 
 echo '<div id="container">
-		<img id="vbanner" src="../css/VerticleBanner.png" />';
+		<img id="vbanner" src="../css/VerticalBanner.png" />';
 
 // Introductory screen.
 if ($_POST['submit']==0) {
