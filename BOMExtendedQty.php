@@ -14,7 +14,7 @@ if (isset($_POST['PrintPDF'])) {
 	$FontSize=9;
 	$PageNumber=1;
 	$line_height=12;
-    PrintHeader($pdf,$YPos,$PageNumber,$Page_Height,$Top_Margin,$Left_Margin,$Page_Width,$Right_Margin);
+	PrintHeader($pdf,$YPos,$PageNumber,$Page_Height,$Top_Margin,$Left_Margin,$Page_Width,$Right_Margin);
 
 	if (!$_POST['Quantity'] or !is_numeric(filter_number_format($_POST['Quantity']))) {
 		$_POST['Quantity'] = 1;
@@ -53,8 +53,8 @@ if (isset($_POST['PrintPDF'])) {
 					   CONCAT(bom.parent,bom.component) AS sortpart
 					  FROM bom
 			  WHERE bom.parent ='" . $_POST['Part'] . "'
-			  AND bom.effectiveto >= NOW()
-			  AND bom.effectiveafter <= NOW()";
+			  AND bom.effectiveto >= CURRENT_DATE
+			  AND bom.effectiveafter <= CURRENT_DATE";
 	$result = DB_query($sql,$db);
 
 	$LevelCounter = 2;
@@ -80,8 +80,8 @@ if (isset($_POST['PrintPDF'])) {
 					 (" . filter_number_format($_POST['Quantity']) . " * bom.quantity) as extendedqpa
 			FROM bom
 			WHERE bom.parent ='" . $_POST['Part'] . "'
-			AND bom.effectiveto >= NOW()
-			AND bom.effectiveafter <= NOW()";
+			AND bom.effectiveto >= CURRENT_DATE
+			AND bom.effectiveafter <= CURRENT_DATE";
 	$result = DB_query($sql,$db);
 	//echo "<br />sql is $sql<br />";
 	// This while routine finds the other levels as long as $ComponentCounter - the
@@ -112,8 +112,8 @@ if (isset($_POST['PrintPDF'])) {
 					 (bom.quantity * passbom.extendedqpa)
 			 FROM bom,passbom
 			 WHERE bom.parent = passbom.part
-			  AND bom.effectiveto >= NOW()
-			  AND bom.effectiveafter <= NOW()";
+			  AND bom.effectiveto >= CURRENT_DATE
+			  AND bom.effectiveafter <= CURRENT_DATE";
 		$result = DB_query($sql,$db);
 
 		$result = DB_query("DROP TABLE IF EXISTS passbom2",$db);
@@ -134,8 +134,8 @@ if (isset($_POST['PrintPDF'])) {
 									FROM bom
 									INNER JOIN passbom2
 									ON bom.parent = passbom2.part
-									WHERE bom.effectiveto >= NOW()
-										AND bom.effectiveafter <= NOW()";
+									WHERE bom.effectiveto >= CURRENT_DATE
+										AND bom.effectiveafter <= CURRENT_DATE";
 		$result = DB_query($sql,$db);
 
 		$sql = "SELECT COUNT(bom.parent) AS components
@@ -178,8 +178,11 @@ if (isset($_POST['PrintPDF'])) {
 				   (SELECT
 					  SUM(purchorderdetails.quantityord - purchorderdetails.quantityrecd) as netqty
 					  FROM purchorderdetails
+					  INNER JOIN purchorders
+					  ON purchorderdetails.orderno=purchorders.orderno
 					  WHERE purchorderdetails.itemcode = tempbom.component
 					  AND completed = 0
+					  AND (purchorders.status = 'Authorised' OR purchorders.status='Printed')
 					  GROUP BY purchorderdetails.itemcode) AS poqty,
 				   (SELECT
 					  SUM(woitems.qtyreqd - woitems.qtyrecd) as netwoqty
@@ -250,8 +253,8 @@ if (isset($_POST['PrintPDF'])) {
 	echo '<p class="page_title_text noPrint" ><img src="'.$RootPath.'/css/'.$Theme.'/images/maintenance.png" title="' . _('Search') . '" alt="" />' . ' ' . $Title.'</p><br />';
 
 	echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'],ENT_QUOTES,'UTF-8') . '" method="post" class="noPrint">
-        <div>
-        <input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />
+		<div>
+		<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />
 		<table class="selection">
 		<tr>
 			<td>' . _('Part') . ':</td>
@@ -282,8 +285,8 @@ if (isset($_POST['PrintPDF'])) {
 			<br />
 			<input type="submit" name="PrintPDF" value="' . _('Print PDF') . '" />
 		</div>
-        </div>
-        </form>';
+		</div>
+		</form>';
 
 	include('includes/footer.inc');
 

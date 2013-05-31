@@ -199,9 +199,11 @@ $MenuItems['PO']['Reports']['URL'] = array ('/PO_SelectPurchOrder.php',
 											'/SuppPriceList.php'
 											);
 
-$MenuItems['PO']['Maintenance']['Caption'] = array (_('Maintain Supplier Price Lists')
+$MenuItems['PO']['Maintenance']['Caption'] = array (_('Maintain Supplier Price Lists'),
+													_('Clear Orders with Quantity on Back Orders')
 													);
-$MenuItems['PO']['Maintenance']['URL'] = array ('/SupplierPriceList.php'
+$MenuItems['PO']['Maintenance']['URL'] = array ('/SupplierPriceList.php',
+												'/POClearBackOrders.php'
 												);
 $MenuItems['stock']['Transactions']['Caption'] = array (_('Receive Purchase Orders'),
 														_('Bulk Inventory Transfer') . ' - ' . _('Dispatch'),
@@ -236,6 +238,7 @@ $MenuItems['stock']['Reports']['Caption'] = array (_('Serial Item Research Tool'
 													_('Reorder Level'),
 													_('Stock Dispatch'),
 													_('Inventory Valuation Report'),
+													_('Mail Inventory Valuation Report'),
 													_('Inventory Planning Report'),
 													_('Inventory Planning Based On Preferred Supplier Data'),
 													_('Inventory Stock Check Sheets'),
@@ -259,6 +262,7 @@ $MenuItems['stock']['Reports']['URL'] = array ('/StockSerialItemResearch.php',
 												'/ReorderLevel.php',
 												'/StockDispatch.php',
 												'/InventoryValuation.php',
+												'/MailInventoryValuation.php',
 												'/InventoryPlanning.php',
 												'/InventoryPlanningPrefSupplier.php',
 												'/StockCheck.php',
@@ -278,7 +282,10 @@ $MenuItems['stock']['Maintenance']['Caption'] = array (_('Add A New Item'),
 														_('Add or Update Prices Based On Costs'),
 														_('View or Update Prices Based On Costs'),
 														_('Upload new prices from csv file'),
-														_('Reorder Level By Category/Location')
+														_('Reorder Level By Category/Location'),
+														_('ABC Ranking Methods'),
+														_('ABC Ranking Groups'),
+														_('Run ABC Ranking Analysis')
 														);
 $MenuItems['stock']['Maintenance']['URL'] = array ('/Stocks.php',
 													'/SelectProduct.php',
@@ -286,13 +293,16 @@ $MenuItems['stock']['Maintenance']['URL'] = array ('/Stocks.php',
 													'/PricesBasedOnMarkUp.php',
 													'/PricesByCost.php',
 													'/UploadPriceList.php',
-													'/ReorderLevelLocation.php'
+													'/ReorderLevelLocation.php',
+													'/ABCRankingMethods.php',
+													'/ABCRankingGroups.php',
+													'/ABCRunAnalysis.php'
 													);
 
 $MenuItems['manuf']['Transactions']['Caption'] = array (_('Work Order Entry'),
 														_('Select A Work Order')
 														);
-$MenuItems['manuf']['Transactions']['URL'] = array ('/WorkOrderEntry.php',
+$MenuItems['manuf']['Transactions']['URL'] = array ('/WorkOrderEntry.php?New=True',
 													'/SelectWorkOrder.php'
 													);
 
@@ -364,6 +374,7 @@ $MenuItems['GL']['Reports']['Caption'] = array (_('Trial Balance'),
 												_('Bank Account Reconciliation Statement'),
 												_('Cheque Payments Listing'),
 												_('Bank Transactions Inquiry'),
+												_('Monthly Bank Inquiry'),
 												_('Profit and Loss Statement'),
 												_('Balance Sheet'),
 												_('Tag Reports'),
@@ -378,6 +389,7 @@ $MenuItems['GL']['Reports']['URL'] = array ('/GLTrialBalance.php',
 											'/BankReconciliation.php',
 											'/PDFChequeListing.php',
 											'/DailyBankTransactions.php',
+											'/MonthlyBankTransactions.php',
 											'/GLProfit_Loss.php',
 											'/GLBalanceSheet.php',
 											'/GLTagProfit_Loss.php',
@@ -470,7 +482,8 @@ $MenuItems['system']['Transactions']['Caption'] = array (_('Company Preferences'
 														_('Geocode Setup'),
 														_('Form Layout Editor'),
 														_('Label Templates Maintenance'),
-														_('SMTP Server Details')
+														_('SMTP Server Details'),
+														_('Mailing Group Maintenance')
 														);
 
 $MenuItems['system']['Transactions']['URL'] = array ('/CompanyPreferences.php',
@@ -491,7 +504,8 @@ $MenuItems['system']['Transactions']['URL'] = array ('/CompanyPreferences.php',
 													'/GeocodeSetup.php',
 													'/FormDesigner.php',
 													'/Labels.php',
-													'/SMTPServer.php'
+													'/SMTPServer.php',
+													'/MailingGroupMaintenance.php'
 													);
 
 $MenuItems['system']['Reports']['Caption'] = array (_('Sales Types'),
@@ -534,7 +548,10 @@ $MenuItems['system']['Maintenance']['Caption'] = array (_('Inventory Categories 
 														_('MRP Demand Types'),
 														_('Maintain Internal Departments'),
 														_('Maintain Internal Stock Categories to User Roles'),
-														_('Report a problem with KwaMoja')
+														_('Report a problem with KwaMoja'),
+														_('Upload a KwaMoja plugin file'),
+														_('Install a KwaMoja plugin'),
+														_('Remove a KwaMoja plugin')
 														);
 
 $MenuItems['system']['Maintenance']['URL'] = array ('/StockCategories.php',
@@ -545,7 +562,10 @@ $MenuItems['system']['Maintenance']['URL'] = array ('/StockCategories.php',
 													'/MRPDemandTypes.php',
 													'/Departments.php',
 													'/InternalStockCategoriesByRole.php',
-													'/ReportBug.php'
+													'/ReportBug.php',
+													'/PluginUpload.php',
+													'/PluginInstall.php',
+													'/PluginUnInstall.php'
 													);
 
 $MenuItems['Utilities']['Transactions']['Caption'] = array (_('Change A Customer Code'),
@@ -553,6 +573,7 @@ $MenuItems['Utilities']['Transactions']['Caption'] = array (_('Change A Customer
 																_('Change A Supplier Code'),
 																_('Change An Inventory Item Code'),
 																_('Change A Location Code'),
+																_('Change A General Ledger Code'),
 																_('Update costs for all BOM items, from the bottom up'),
 																_('Re-apply costs to Sales Analysis'),
 																_('Delete sales transactions'),
@@ -563,6 +584,7 @@ $MenuItems['Utilities']['Transactions']['URL'] = array ('/Z_ChangeCustomerCode.p
 													'/Z_ChangeSupplierCode.php',
 													'/Z_ChangeStockCode.php',
 													'/Z_ChangeLocationCode.php',
+													'/Z_ChangeGLAccountCode.php',
 													'/Z_BottomUpCosts.php',
 													'/Z_ReApplyCostToSA.php',
 													'/Z_DeleteSalesTransActions.php',
@@ -601,4 +623,7 @@ $MenuItems['Utilities']['Maintenance']['URL'] = array ('/Z_poAdmin.php',
 														'/Z_RePostGLFromPeriod.php',
 														'/Z_DeleteOldPrices.php'
 												);
+
+include('includes/PluginMenuLinksArray.php');
+
 ?>

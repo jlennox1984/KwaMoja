@@ -5,6 +5,12 @@ c.focus();
 function ReloadForm(fB){
 fB.click();
 }
+function ShowTable(t){
+	document.getElementById(t).style["display"] = "table";
+}
+function HideTable(t){
+	document.getElementById(t).style["display"] = "none";
+}
 function rTN(event){
 	if (window.event) k=window.event.keyCode;
 	else if (event) k=event.which;
@@ -146,6 +152,8 @@ function formatDate(dV,dF){
 			return d+"."+m+"."+y;
 		case "Y/m/d":
 			return y+"/"+m+"/"+d;
+		case "Y-m-d":
+			return y+"-"+m+"-"+d;
 		default :
 			return m+"/"+d+"/"+y;
 	}

@@ -42,7 +42,7 @@ if (isset($_POST['UpdateLines']) or isset($_POST['Commit'])) {
 				prnMsg(_('The quantity in the supplier units is expected to be numeric. Please re-enter as a number'), 'error');
 			} //!is_numeric(filter_number_format($_POST['SuppQty' . $POLine->LineNo]))
 			else { //ok to update the PO object variables
-				$_SESSION['PO' . $identifier]->LineItems[$POLine->LineNo]->Quantity = filter_number_format(round(filter_number_format($_POST['SuppQty' . $POLine->LineNo]) * filter_number_format($_SESSION['PO' . $identifier]->LineItems[$POLine->LineNo]->ConversionFactor), $_SESSION['PO' . $identifier]->LineItems[$POLine->LineNo]->DecimalPlaces));
+				$_SESSION['PO'.$identifier]->LineItems[$POLine->LineNo]->Quantity = round(filter_number_format($_POST['SuppQty'.$POLine->LineNo])*$_SESSION['PO'.$identifier]->LineItems[$POLine->LineNo]->ConversionFactor,$_SESSION['PO'.$identifier]->LineItems[$POLine->LineNo]->DecimalPlaces);
 			}
 			if (!is_numeric(filter_number_format($_POST['SuppPrice' . $POLine->LineNo]))) {
 				prnMsg(_('The supplier price is expected to be numeric. Please re-enter as a number'), 'error');
@@ -240,6 +240,12 @@ if (isset($_POST['Commit'])) {
 			/* end of the loop round the detail line items on the order */
 			echo '<p />';
 			prnMsg(_('Purchase Order') . ' ' . $_SESSION['PO' . $identifier]->OrderNo . ' ' . _('on') . ' ' . $_SESSION['PO' . $identifier]->SupplierName . ' ' . _('has been created'), 'success');
+			if ($_SESSION['PO'.$identifier]->AllowPrintPO==1
+				and ($_SESSION['PO'.$identifier]->Status=='Authorised'
+				or $_SESSION['PO'.$identifier]->Status=='Printed')){
+
+				echo '<br /><div class="centre"><a target="_blank" href="'.$RootPath.'/PO_PDFPurchOrder.php?OrderNo=' . $_SESSION['PO'.$identifier]->OrderNo . '">' . _('Print Purchase Order') . '</a></div>';
+			}
 		} //$_SESSION['ExistingOrder'] == 0
 		else {
 			/*its an existing order need to update the old order info */
@@ -393,8 +399,10 @@ if (isset($_POST['Commit'])) {
 
 		$Result = DB_Txn_Commit($db);
 		/* Only show the link to auto receive the order if the user has permission to receive goods and permission to authorise and has authorised the order */
-		if ($_SESSION['PO' . $identifier]->Status == 'Authorised' and in_array(1001, $_SESSION['AllowedPageSecurityTokens'])) {
-			echo '<a href="SupplierInvoice.php?SupplierID=' . $_SESSION['PO' . $identifier]->SupplierID . '&amp;ReceivePO=' . $_SESSION['PO' . $identifier]->OrderNo . '&amp;DeliveryDate=' . $_SESSION['PO' . $identifier]->DeliveryDate . '">' . _('Receive and Enter Purchase Invoice') . '</a>';
+		if ($_SESSION['PO'.$identifier]->Status == 'Authorised'
+			and in_array($_SESSION['PageSecurityArray']['GoodsReceived.php'], $_SESSION['AllowedPageSecurityTokens'])){
+
+			echo '<a href="SupplierInvoice.php?SupplierID=' . $_SESSION['PO'.$identifier]->SupplierID . '&amp;ReceivePO=' . $_SESSION['PO'.$identifier]->OrderNo . '&amp;DeliveryDate=' . $_SESSION['PO'.$identifier]->DeliveryDate . '">' . _('Receive and Enter Purchase Invoice') . '</a>';
 		} //$_SESSION['PO' . $identifier]->Status == 'Authorised' and in_array(1001, $_SESSION['AllowedPageSecurityTokens'])
 
 		unset($_SESSION['PO' . $identifier]);
@@ -413,8 +421,7 @@ if (isset($_POST['Commit'])) {
 
 if (isset($_GET['Delete'])) {
 	if ($_SESSION['PO' . $identifier]->Some_Already_Received($_GET['Delete']) == 0) {
-		$_SESSION['PO' . $identifier]->LineItems[$_GET['Delete']]->Deleted = True;
-		$_SESSION['PO' . $identifier]->LinesOnOrder--;
+		$_SESSION['PO'.$identifier]->remove_from_order($_GET['Delete']);
 		include('includes/PO_UnsetFormVbls.php');
 	} //$_SESSION['PO' . $identifier]->Some_Already_Received($_GET['Delete']) == 0
 	else {
@@ -515,7 +522,28 @@ if (isset($_POST['EnterLine'])) {
 	if ($AllowUpdate == true) {
 		//adding the non-stock item
 
-		$_SESSION['PO' . $identifier]->add_to_order($_SESSION['PO' . $identifier]->LinesOnOrder + 1, '', 0, /*Serialised */ 0, /*Controlled */ filter_number_format($_POST['Qty']), $_POST['ItemDescription'], filter_number_format($_POST['Price']), $_POST['SuppliersUnit'], $_POST['GLCode'], $_POST['ReqDelDate'], '', 0, '', 0, 0, $GLAccountName, 2, $_POST['SuppliersUnit'], 1, '', $_POST['AssetID']);
+		$_SESSION['PO' . $identifier]->add_to_order($_SESSION['PO' . $identifier]->LinesOnOrder + 1,
+													'',
+													0, /*Serialised */
+													0, /*Controlled */
+													filter_number_format($_POST['Qty']),
+													$_POST['ItemDescription'],
+													filter_number_format($_POST['Price']),
+													$_POST['SuppliersUnit'],
+													$_POST['GLCode'],
+													$_POST['ReqDelDate'],
+													'',
+													0,
+													'',
+													0,
+													0,
+													$GLAccountName,
+													2,
+													$_POST['SuppliersUnit'],
+													1,
+													1,
+													'',
+													$_POST['AssetID']);
 		include('includes/PO_UnsetFormVbls.php');
 	} //$AllowUpdate == true
 } //isset($_POST['EnterLine'])
@@ -639,7 +667,7 @@ if (isset($_POST['NewItem']) and !empty($_POST['PO_ItemsResubmitFormValue']) and
 						 * if > header DeliveryDate then set DeliveryDate to today + leadtime
 						 */
 						$DeliveryDate = DateAdd(Date($_SESSION['DefaultDateFormat']), 'd', $LeadTime);
-						if (!Date1GreaterThanDate2($DeliveryDate, $_SESSION['PO' . $identifier]->DeliveryDate)) {
+						if (Date1GreaterThanDate2($_SESSION['PO'.$identifier]->DeliveryDate,$DeliveryDate)) {
 							$DeliveryDate = $_SESSION['PO' . $identifier]->DeliveryDate;
 						} //!Date1GreaterThanDate2($DeliveryDate, $_SESSION['PO' . $identifier]->DeliveryDate)
 					} //DB_num_rows($PurchDataResult) > 0
@@ -1183,7 +1211,7 @@ if (isset($SearchResult)) {
 		if (DB_num_rows($PurchDataResult) > 0) {
 			$PurchDataRow = DB_fetch_array($PurchDataResult);
 			$OrderUnits = $PurchDataRow['suppliersuom'];
-			$ConversionFactor = $PurchDataRow['conversionfactor'];
+			$ConversionFactor = locale_number_format($PurchDataRow['conversionfactor'],'Variable');
 		} //DB_num_rows($PurchDataResult) > 0
 		else {
 			$OrderUnits = $myrow['units'];

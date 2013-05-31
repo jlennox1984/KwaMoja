@@ -5,10 +5,10 @@
 define ('LIKE','LIKE');
 
 global  $db;		// Make sure it IS global, regardless of our context
-if (!isset($mysqlport)){
-	$mysqlport = 3306;
+if (!isset($DBPort)){
+	$DBPort = 3306;
 }
-$db = mysql_connect($host.':'.$mysqlport , $DBUser, $DBPassword);
+$db = mysql_connect($host.':'.$DBPort , $DBUser, $DBPassword);
 $result=DB_query("SET sql_mode = 'ANSI'", $db);
 
 //this statement sets the charset to be used for sending data to and from the db server
@@ -71,7 +71,7 @@ function DB_query ($SQL,
 		if ($TrapErrors){
 			require_once($PathPrefix . 'includes/header.inc');
 		}
-		prnMsg($ErrorMessage.'<br />' . DB_error_msg($Conn),'error', _('Database Error'));
+		prnMsg($ErrorMessage.'<br />' . DB_error_msg($Conn),'error', _('Database Error'). ' ' .DB_error_no($Conn));
 		if ($debug==1){
 			prnMsg($DebugMessage. "<br />$SQL<br />",'error',_('Database SQL Failure'));
 			}
@@ -79,7 +79,9 @@ function DB_query ($SQL,
 			$SQL = 'rollback';
 			$Result = DB_query($SQL,$Conn);
 			if (DB_error_no($Conn) !=0){
-				prnMsg(_('Error Rolling Back Transaction'), '', _('Database Rollback Error') );
+				prnMsg(_('Error Rolling Back Transaction'), 'error', _('Database Rollback Error'). ' ' .DB_error_no($Conn) );
+			}else{
+				prnMsg(_('Rolling Back Transaction OK'), 'error', _('Database Rollback Due to Error Above'));
 			}
 		}
 		if ($TrapErrors){
@@ -168,8 +170,8 @@ function DB_escape_string($String){
 	return mysql_real_escape_string(htmlspecialchars($String, ENT_COMPAT, 'utf-8', false));
 }
 
-function DB_show_tables(&$Conn){
-	$Result = DB_query('SHOW TABLES',$Conn);
+function DB_show_tables(&$Conn, $TableName='%'){
+	$Result = DB_query("SHOW TABLES WHERE Tables_in_" . $_SESSION['DatabaseName'] . " " . LIKE . "'" . $TableName . "'",$Conn);
 	return $Result;
 }
 

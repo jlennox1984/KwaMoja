@@ -71,7 +71,7 @@ $sql = "SELECT recurringsalesorders.recurrorderno,
 		AND recurringsalesorders.branchcode = custbranch.branchcode
 		AND recurringsalesorders.fromstkloc=locations.loccode
 		AND recurringsalesorders.ordertype=salestypes.typeabbrev
-		AND (TO_DAYS(NOW()) - TO_DAYS(recurringsalesorders.lastrecurrence)) > (365/recurringsalesorders.frequency)
+		AND (TO_DAYS(CURRENT_DATE) - TO_DAYS(recurringsalesorders.lastrecurrence)) > (365/recurringsalesorders.frequency)
 		AND DATE_ADD(recurringsalesorders.lastrecurrence, " . INTERVAL ('365/recurringsalesorders.frequency', 'DAY') . ") <= recurringsalesorders.stopdate";
 
 $RecurrOrdersDueResult = DB_query($sql,$db,_('There was a problem retrieving the recurring sales order templates. The database reported:'));
@@ -706,8 +706,14 @@ while ($RecurrOrderRow = DB_fetch_array($RecurrOrdersDueResult)){
 		$mail = new htmlMimeMail();
 		$mail->setText($EmailText);
 		$mail->setSubject(_('Recurring Order Created Advice'));
-		$mail->setFrom($_SESSION['CompanyRecord']['coyname'] . "<" . $_SESSION['CompanyRecord']['email'] . ">");
-		$result = $mail->send(array($RecurrOrderRow['email']));
+		if($_SESSION['SmtpSetting']==0){
+			$mail->setFrom($_SESSION['CompanyRecord']['coyname'] . "<" . $_SESSION['CompanyRecord']['email'] . ">");
+
+			$result = $mail->send(array($RecurrOrderRow['email']));
+		}else{
+			$result = SendmailBySmtp($mail,array($RecurrOrderRow['email']));
+
+		}
 		unset($mail);
 	} else {
 		prnMsg(_('No email advice was sent for this order because the location has no email contact defined with a valid email address'),'warn');

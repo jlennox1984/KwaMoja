@@ -28,21 +28,21 @@ function getMsg($Msg,$Type='info',$Prefix=''){
 			$Class = 'error';
 			$Prefix = $Prefix ? $Prefix : _('ERROR') . ' ' ._('Message Report');
 			if (isset($_SESSION['LogSeverity']) and $_SESSION['LogSeverity']>0) {
-				fwrite($LogFile, date('Y-m-d h-m-s').','.$Type.','.$_SESSION['UserID'].','.trim($Msg,',')."\n");
+				fwrite($LogFile, date('Y-m-d H:i:s').','.$Type.','.$_SESSION['UserID'].','.trim(str_replace("<br />", " ", $Msg),',')."\n");
 			}
 			break;
 		case 'warn':
 			$Class = 'warn';
 			$Prefix = $Prefix ? $Prefix : _('WARNING') . ' ' . _('Message Report');
 			if (isset($_SESSION['LogSeverity']) and $_SESSION['LogSeverity']>1) {
-				fwrite($LogFile, date('Y-m-d h-m-s').','.$Type.','.$_SESSION['UserID'].','.trim($Msg,',')."\n");
+				fwrite($LogFile, date('Y-m-d H:i:s').','.$Type.','.$_SESSION['UserID'].','.trim(str_replace("<br />", " ", $Msg),',')."\n");
 			}
 			break;
 		case 'success':
 			$Class = 'success';
 			$Prefix = $Prefix ? $Prefix : _('SUCCESS') . ' ' . _('Report');
 			if (isset($_SESSION['LogSeverity']) and $_SESSION['LogSeverity']>3) {
-				fwrite($LogFile, date('Y-m-d h-m-s').','.$Type.','.$_SESSION['UserID'].','.trim($Msg,',')."\n");
+				fwrite($LogFile, date('Y-m-d H:i:s').','.$Type.','.$_SESSION['UserID'].','.trim(str_replace("<br />", " ", $Msg),',')."\n");
 			}
 			break;
 		case 'info':
@@ -50,7 +50,7 @@ function getMsg($Msg,$Type='info',$Prefix=''){
 			$Prefix = $Prefix ? $Prefix : _('INFORMATION') . ' ' ._('Message');
 			$Class = 'info';
 			if (isset($_SESSION['LogSeverity']) and $_SESSION['LogSeverity']>2) {
-				fwrite($LogFile, date('Y-m-d h-m-s').','.$Type.','.$_SESSION['UserID'].','.trim($Msg,',')."\n");
+				fwrite($LogFile, date('Y-m-d H:i:s').','.$Type.','.$_SESSION['UserID'].','.trim(str_replace("<br />", " ", $Msg),',')."\n");
 			}
 	}
 	return '<div class="'.$Class.'"><b>' . $Prefix . '</b> : ' .$Msg . '</div>';
@@ -193,7 +193,7 @@ for detail of the European Central Bank rates - published daily */
 
 function GetCurrencyRate($CurrCode,$CurrenciesArray) {
   if ((!isset($CurrenciesArray[$CurrCode]) or !isset($CurrenciesArray[$_SESSION['CompanyRecord']['currencydefault']]))){
-  	return quote_oanda_currency($CurrCode);
+  	return google_currency_rate($CurrCode);
   } elseif ($CurrCode=='EUR'){
   	if ($CurrenciesArray[$_SESSION['CompanyRecord']['currencydefault']]==0) {
   		return 0;
@@ -241,7 +241,7 @@ function AddCarriageReturns($str) {
 }
 
 
-function wikiLink($type, $id) {
+function wikiLink($WikiType, $WikiPageID) {
 	if (strstr($_SESSION['WikiPath'], 'http:')) {
 		$WikiPath=$_SESSION['WikiPath'];
 	} else {
@@ -250,7 +250,7 @@ function wikiLink($type, $id) {
 	if ($_SESSION['WikiApp']==_('WackoWiki')){
 		echo '<a href=""' . $WikiPath . $WikiType .  $WikiPageID . '"" target="_blank">' . _('Wiki ' . $WikiType . ' Knowledge Base') . ' </a>  <br />';
 	} elseif ($_SESSION['WikiApp']==_('MediaWiki')){
-		echo '<a href="' . $WikiPath . 'index.php/' . $WikiType . '/' . $WikiPageID . '" target="_blank">' . _('Wiki ' . $WikiType . ' Knowlege Base') . '</a><br />';
+		echo '<a target="_blank" href="' . $WikiPath . 'index.php?title=' . $WikiType . '/' . $WikiPageID . '">' . _('Wiki ' . $WikiType . ' Knowledge Base') . '</a><br />';
 	} elseif ($_SESSION['WikiApp']==_('DokuWiki')){
 		echo '<a href="' . $WikiPath . '/doku.php?id=' . $WikiType . ':' . $WikiPageID . '" target="_blank">' . _('Wiki ' .$WikiType . ' Knowlege Base') . '</a><br />';
 	}
@@ -401,6 +401,51 @@ function indian_number_format($Number,$DecimalPlaces){
 	} else {
 		return $IntegerNumber. $DecimalValue;
 	}
+}
+
+function SendMailBySmtp(&$mail,$To) {
+	if(IsEmailAddress($_SESSION['SMTPSettings']['username'])){//user has set the fully mail address as user name
+		$SendFrom = $_SESSION['SMTPSettings']['username'];
+	} else {//user only set it's name instead of fully mail address
+		if(strpos($_SESSION['SMTPSettings']['host'],'mail') !== false) {
+			$SubStr = 'mail';
+		} elseif(strpos($_SESSION['SMTPSettings']['host'],'smtp') !== false) {
+			$SubStr = 'smtp';
+		}
+		$Domain = substr($_SESSION['SMTPSettings']['host'],strpos($_SESSION['SMTPSettings']['host'],$SubStr)+5);
+		$SendFrom = $_SESSION['SMTPSettings']['username'].'@'.$Domain;
+	}
+	$mail->setFrom($SendFrom);
+	$result = $mail->send($To,'smtp');
+	return $result;
+}
+
+function GetMailList($Recipients){
+	global $db;
+	$ToList = array();
+	$sql = "SELECT email,realname FROM mailgroupdetails INNER JOIN www_users ON www_users.userid=mailgroupdetails.userid WHERE mailgroupdetails.groupname='".$Recipients."'";
+	$ErrMsg = _('Failed to retrieve mail lists');
+	$result = DB_query($sql,$db,$ErrMsg);
+	if(DB_num_rows($result) != 0){
+
+		 //Create the string which meets the Recipients requirements
+		 while($myrow = DB_fetch_array($result)){
+			$ToList[]= $myrow['realname'].'<'.$myrow['email'].'>';
+		 }
+
+	}
+	return $ToList;
+}
+
+function ChangeFieldInTable($TableName, $FieldName, $OldValue, $NewValue, $db){
+	/* Used in Z_ scripts to change one field across the table.
+	*/
+	echo '<br />' . _('Changing') . ' ' . $TableName . ' ' . _('records');
+	$sql = "UPDATE " . $TableName . " SET " . $FieldName . " ='" . $NewValue . "' WHERE " . $FieldName . "='" . $OldValue . "'";
+	$DbgMsg = _('The SQL statement that failed was');
+	$ErrMsg = _('The SQL to update' . ' ' . $TableName . ' ' . _('records failed'));
+	$result = DB_query($sql,$db,$ErrMsg,$DbgMsg,true);
+	echo ' ... ' . _('completed');
 }
 
 ?>

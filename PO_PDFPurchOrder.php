@@ -331,10 +331,21 @@ if (isset($MakePDFThenDisplayIt) or isset($MakePDFThenEmailIt)) {
 		$mail->setText(_('Please find herewith our purchase order number') . ' ' . $OrderNo);
 		$mail->setSubject(_('Purchase Order Number') . ' ' . $OrderNo);
 		$mail->addAttachment($attachment, $PdfFileName, 'application/pdf');
-		$mail->setFrom($_SESSION['CompanyRecord']['coyname'] . '<' . $_SESSION['CompanyRecord']['email'] . '>');
-		$Success = $mail->send(array(
-			$_POST['EmailTo']
-		));
+		//since sometime the mail server required to verify the users, so must set this information.
+		if ($_SESSION['SmtpSetting'] == 0) { //use the mail service provice by the server.
+			$mail->setFrom($_SESSION['CompanyRecord']['coyname'] . '<' . $_SESSION['CompanyRecord']['email'] . '>');
+			$Success = $mail->send(array(
+				$_POST['EmailTo']
+			));
+		} else if ($_SESSION['SmtpSetting'] == 1) {
+			$Success = SendmailBySmtp($mail, array(
+				$_POST['EmailTo']
+			));
+		} else {
+			prnMsg(_('The SMTP settings are wrong, please ask administrator for help'), 'error');
+			exit;
+			include('includes/footer.inc');
+		}
 		if ($Success == 1) {
 			$Title = _('Email a Purchase Order');
 			include('includes/header.inc');
@@ -375,9 +386,9 @@ else {
 	echo '<br /><br />';
 	echo '<input type="hidden" name="OrderNo" value="' . $OrderNo . '" />';
 	echo '<table>
-         <tr>
-             <td>' . _('Print or Email the Order') . '</td>
-             <td><select name="PrintOrEmail">';
+		 <tr>
+			 <td>' . _('Print or Email the Order') . '</td>
+			 <td><select name="PrintOrEmail">';
 
 	if (!isset($_POST['PrintOrEmail'])) {
 		$_POST['PrintOrEmail'] = 'Print';
@@ -442,11 +453,11 @@ else {
 		echo '</table>';
 	}
 	echo '<br />
-         <div class="centre">
-              <input type="submit" name="DoIt" value="' . _('OK') . '" />
-         </div>
-         </div>
-         </form>';
+		 <div class="centre">
+			  <input type="submit" name="DoIt" value="' . _('OK') . '" />
+		 </div>
+		 </div>
+		 </form>';
 
 	include('includes/footer.inc');
 }

@@ -20,6 +20,17 @@ if (isset($_GET['StockID'])){
 	$StockID = '';
 }
 
+if (isset($_POST['NextItem_x'])){
+	$Result = DB_query("SELECT stockid FROM stockmaster WHERE stockid>'" . $StockID . "' ORDER BY stockid ASC LIMIT 1",$db);
+	$NextItemRow = DB_fetch_row($Result);
+	$StockID = $NextItemRow[0];
+}
+if (isset($_POST['PreviousItem_x'])){
+	$Result = DB_query("SELECT stockid FROM stockmaster WHERE stockid<'" . $StockID . "' ORDER BY stockid DESC LIMIT 1",$db);
+	$PreviousItemRow = DB_fetch_row($Result);
+	$StockID = $PreviousItemRow[0];
+}
+
 if (isset($StockID) and !isset($_POST['UpdateCategories'])) {
 	$sql = "SELECT COUNT(stockid)
 			FROM stockmaster
@@ -39,7 +50,9 @@ if (isset($_POST['New'])) {
 	$New=$_POST['New'];
 }
 
-echo '<a href="' . $RootPath . '/SelectProduct.php">' . _('Back to Items') . '</a>
+echo '<div class="toplink">
+		<a href="' . $RootPath . '/SelectProduct.php">' . _('Back to Items') . '</a>
+	</div>
 	<br />
 	<p class="page_title_text noPrint" >
 		<img src="'.$RootPath.'/css/'.$Theme.'/images/inventory.png" title="' . _('Stock') . '" alt="" />' . ' ' . $Title . '
@@ -513,7 +526,6 @@ if (isset($_POST['submit'])) {
 				} /* end if the stock category changed and forced a change in WIP account */
 				DB_Txn_Commit($db);
 				prnMsg( _('Stock Item') . ' ' . $StockID . ' ' . _('has been updated'), 'success');
-				echo '<br />';
 			}
 
 		} else { //it is a NEW part
@@ -699,6 +711,24 @@ if (isset($_POST['submit'])) {
 							$CancelDelete = 1;
 							prnMsg( _('Cannot delete this item because there is currently some stock on hand'),'warn');
 							echo '<br />' . _('There are') . ' ' . $myrow[0] . ' ' . _('on hand for this part');
+						} else {
+							$sql = "SELECT COUNT(*) FROM offers WHERE stockid='".$StockID."' GROUP BY stockid";
+							$result = DB_query($sql,$db);
+							$myrow = DB_fetch_row($result);
+							if ($myrow[0]!=0) {
+								$CancelDelete = 1;
+								prnMsg( _('Cannot delete this item because there are offers for this item'),'warn');
+								echo '<br />' . _('There are') . ' ' . $myrow[0] . ' ' . _('offers from suppliers for this part');
+							} else {
+								$sql = "SELECT COUNT(*) FROM tenderitems WHERE stockid='".$StockID."' GROUP BY stockid";
+								$result = DB_query($sql,$db);
+								$myrow = DB_fetch_row($result);
+								if ($myrow[0]!=0) {
+									$CancelDelete = 1;
+									prnMsg( _('Cannot delete this item because there are tenders for this item'),'warn');
+									echo '<br />' . _('There are') . ' ' . $myrow[0] . ' ' . _('tenders from suppliers for this part');
+								}
+							}
 						}
 					}
 				}
@@ -762,6 +792,15 @@ if (isset($_POST['submit'])) {
 echo '<form id="ItemForm" enctype="multipart/form-data" method="post" class="noPrint" action="' . htmlspecialchars($_SERVER['PHP_SELF'],ENT_QUOTES,'UTF-8') . '">';
 echo '<div>';
 echo '<input type="hidden" name="FormID" value="' . $_SESSION['FormID'] . '" />';
+
+if (isset($StockID)){
+	echo '<table width="100%">
+			<tr>
+				<td><input class="image" src="css/'.$Theme.'/images/previous.png" type="image" name="PreviousItem" title="' . _('Previous Item') . '" value="" /></td>
+				<td><label>' . _('Navigate Items') . '</label></td>
+				<td><input class="image" src="css/'.$Theme.'/images/next.png" type="image" name="NextItem" title="' . _('Next Item') . '" value="" /></td>
+			</tr>';
+}
 
 echo '<input type="hidden" name="New" value="'.$New.'" />';
 echo '<table class="selection">';
