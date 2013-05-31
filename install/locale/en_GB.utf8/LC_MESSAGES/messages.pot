@@ -1,0 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-30 16:32+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: install/Page0.php:8
+msgid "Select the Language for this install"
+msgstr ""
+
+#: install/Page0.php:14
+msgid "Select Language"
+msgstr ""
+
+#: install/Page0.php:24 install/Page1.php:28 install/Page2.php:121
+#: install/Page3.php:54
+msgid "Go Back"
+msgstr ""
+
+#: install/Page0.php:25 install/Page1.php:29 install/Page2.php:122
+#: install/Page3.php:55
+msgid "Continue"
+msgstr ""
+
+#: install/Page1.php:15
+msgid "Welcome to the KwaMoja installation wizard"
+msgstr ""
+
+#: install/Page1.php:19
+msgid "KwaMoja is designed to help you manage your business in a more efficient and profitable manner.  It combines your book keeping needs with all the tools to plan your inventory purchases.   It will let you know when your factory needs to start manufacturing parts in order to keep up with orders.  It will help you better manage your cash flow. All these and more will help your business become more efficient, and greater efficiency will equal greater profits."
+msgstr ""
+
+#: install/Page1.php:20
+msgid "KwaMoja is a Kiswahili concept, literally meaning \"For Unity\". In the context of an open source project such as this, it is intended to symbolise the bringing together of all contributors and users. To unify a project that has become fractured, due to the many squabbles and arguments that have occurred between the administrator of webERP and many of the developers of that project."
+msgstr ""
+
+#: install/Page1.php:21
+msgid "It is also intended to describe the idea of bringing all the various strands of a business together into one software suite. The term ERP has become much misused over the last few years, so we have tried not to use that term here. KwaMoja is simply a tool that helps brings all the aspects of a business together."
+msgstr ""
+
+#: install/Page1.php:22
+msgid "This wizard will guide you through the installation process."
+msgstr ""
+
+#: install/Page1.php:23
+msgid "You will need to know the location, type, and password for your database management system."
+msgstr ""
+
+#: install/Page1.php:24
+msgid "You can choose from a selection of different charts of account, depending on your locality and the type of your organisation."
+msgstr ""
+
+#: install/Page1.php:25
+msgid "Firstly KwaMoja will do some checks on your system. When you want to start, just click the continue button below."
+msgstr ""
+
+#: install/Page2.php:7
+msgid "Please check the following requirements are met before continuing..."
+msgstr ""
+
+#: install/Page2.php:10
+msgid "The PHP Version must be at least 5.1.0"
+msgstr ""
+
+#: install/Page2.php:23
+msgid "The PHP Safe-Mode must be disabled"
+msgstr ""
+
+#: install/Page2.php:35
+msgid "The gd extension must be installed"
+msgstr ""
+
+#: install/Page2.php:47
+msgid "The gettext extension must be installed"
+msgstr ""
+
+#: install/Page2.php:59
+msgid "The libxml extension must be installed"
+msgstr ""
+
+#: install/Page2.php:71
+msgid "The mbstring extension must be installed"
+msgstr ""
+
+#: install/Page2.php:83
+msgid "The ftp extension must be installed"
+msgstr ""
+
+#: install/Page2.php:95
+msgid "Please check the following files/folders are writeable before continuing..."
+msgstr ""
+
+#: install/Page2.php:98
+msgid "The root for your KwaMoja files, where the scripts are located"
+msgstr ""
+
+#: install/Page3.php:7
+msgid "Database information required for installation"
+msgstr ""
+
+#: install/Page3.php:10
+msgid "Database Type"
+msgstr ""
+
+#: install/Page3.php:30
+msgid "Host address"
+msgstr ""
+
+#: install/Page3.php:34
+msgid "Database port to use"
+msgstr ""
+
+#: install/Page3.php:38
+msgid "Database user name"
+msgstr ""
+
+#: install/Page3.php:42
+msgid "Database user password"
+msgstr ""
+
+#: install/Page3.php:46
+msgid "Database/Company name"
+msgstr ""
+
+#: install/Page3.php:48
+msgid "Use existing database with this name?"
+msgstr ""
+
+#: install/Page3.php:49
+msgid "*WARNING* - All tables will be deleted"
+msgstr ""
