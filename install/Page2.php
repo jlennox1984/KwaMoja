@@ -1,58 +1,126 @@
 <?php
 
-
-echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '" method="post">
+	$Extensions = get_loaded_extensions();
+	?>
 		<table cellpadding="3" cellspacing="0" align="center" width="75%">
+		<tr>
+			<th colspan="3"><?php echo _('Please check the following requirements are met before continuing...'); ?></th>
+		</tr>
+		<tr>
+			<td><?php echo _('The PHP Version must be at least 5.1.0'); ?></td>
+			<td>
+				<?php
+				$phpversion = mb_substr(PHP_VERSION, 0, 6);
+				if($phpversion > 5.1) {
+					?><font class="good"><?php echo PHP_VERSION;?></font><?php
+				} else {
+					?><font class="bad">No</font><?php
+				}
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td><?php echo _('The PHP Safe-Mode must be disabled'); ?></td>
+			<td>
+				<?php
+				if(ini_get('safe_mode')) {
+					?><font class="bad">Enabled</font><?php
+				} else {
+					?><font class="good">Disabled</font><?php
+				}
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td><?php echo _('The gd extension must be installed'); ?></td>
+			<td>
+				<?php
+				if(in_array('gd', $Extensions)) {
+					?><font class="good">Installed</font><?php
+				} else {
+					?><font class="bad">Not Installed</font><?php
+				}
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td><?php echo _('The gettext extension must be installed'); ?></td>
+			<td>
+				<?php
+				if(in_array('gettext', $Extensions)) {
+					?><font class="good">Installed</font><?php
+				} else {
+					?><font class="bad">Not Installed</font><?php
+				}
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td><?php echo _('The libxml extension must be installed'); ?></td>
+			<td>
+				<?php
+				if(in_array('libxml', $Extensions)) {
+					?><font class="good">Installed</font><?php
+				} else {
+					?><font class="bad">Not Installed</font><?php
+				}
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td><?php echo _('The mbstring extension must be installed'); ?></td>
+			<td>
+				<?php
+				if(in_array('mbstring', $Extensions)) {
+					?><font class="good">Installed</font><?php
+				} else {
+					?><font class="bad">Not Installed</font><?php
+				}
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td><?php echo _('The ftp extension must be installed'); ?></td>
+			<td>
+				<?php
+				if(in_array('ftp', $Extensions)) {
+					?><font class="good">Installed</font><?php
+				} else {
+					?><font class="bad">Not Installed</font><?php
+				}
+				?>
+			</td>
+		</tr>
+		<tr>
+			<th colspan="3"><?php echo _('Please check the following files/folders are writeable before continuing...'); ?></th>
+		</tr>
+		<tr>
+		  <td><?php echo _('The root for your KwaMoja files, where the scripts are located'); ?></td>
+			<td><?php  if(is_writable($PathToRoot)) {
+						 echo '<font class="good">Writeable</font>';
+					 } else {
+						echo '<font class="bad">Unwriteable</font>';
+				    } ?>
+			</td>
+		</tr>
+		<tr>
+			<td><?php echo 'Company data dirs ('.  $CompanyPath. '/*)'; ?>
+			</td>
+			<td><?php if(is_writable($CompanyPath)) {
+						echo '<font class="good">Writeable</font>';
+					  } else {
+						echo '<font class="bad">Unwriteable</font>';
+					  }
+				 ?>
+		   </td>
+		</tr>
+		</table>
+	<?php
+	echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '" method="post">
 			<tr>
-				<th colspan="3">' . _('Database information required for installation') . '</th>
+				<td class="button_bar"><button id="navigate" name="submit" value="1">&lt;&lt;&nbsp;&nbsp;' . _('Go Back') . '</button>
+				<button id="navigate" name="submit" value="3">' . _('Continue') . '&nbsp;&nbsp;&gt;&gt;</button></td>
 			</tr>
-			<tr>
-				<td>' . _('Database Type') . '</td>';
-echo '<td><select name="DBMS" id="select">';
-
-if ($_SESSION['Install']['DatabaseType']=='') {
-	echo '<option selected="selected" value=""></option>';
-} else {
-	echo '<option value=""></option>';
-}
-
-foreach ($PotentialDBMS as $DBMS) {
-	if ($_SESSION['Install']['DatabaseType']==$DBMS) {
-		echo '<option selected="selected" value="' . $DBMS . '">' . $DBMS . '</option>';
-	} else {
-		echo '<option value="' . $DBMS . '">' . $DBMS . '</option>';
-	}
-}
-echo '</select>
-				</td>
-			</tr>';
-echo '<tr>
-		<td>' . _('Host address') . '</td>
-		<td><input type="text" name="host" value="' . $_SESSION['Install']['DatabaseHost'] . '" /></td>
-	</tr>';
-echo '<tr>
-		<td>' . _('Database port to use') . '</td>
-		<td><input type="text" name="port" value="' . $_SESSION['Install']['DatabasePort'] . '" /></td>
-	</tr>';
-echo '<tr>
-		<td>' . _('Database user name') . '</td>
-		<td><input type="text" name="user" value="' . $_SESSION['Install']['DatabaseUser'] . '" /></td>
-	</tr>';
-echo '<tr>
-		<td>' . _('Database user password') . '</td>
-		<td><input type="password" name="password" value="' . $_SESSION['Install']['DatabasePassword'] . '" /></td>
-	</tr>';
-echo '<tr>
-		<td>' . _('Database/Company name') . '</td>
-		<td><input type="text" name="company" value="' . $_SESSION['Install']['DatabaseName'] . '"></td>
-		<td><input type="checkbox" name="UseExisting" value="UseExisting">' . _('Use existing database with this name?') . '<br />
-			' . _('*WARNING* - All tables will be deleted') . '</td>
-	</tr>';
-echo '</table>
-		<div id="continue">
-			<button id="navigate" name="submit" value="1">&lt;&lt;&nbsp;&nbsp;' . _('Go Back') . '</button>
-			<button id="navigate" name="submit" value="3">' . _('Continue') . '&nbsp;&nbsp;&gt;&gt;</button>
-		</div>
-	</form>';
+		</form>';
 
 ?>

@@ -31,6 +31,10 @@ if (isset($_POST['port'])) {
 	$_SESSION['Install']['DatabasePort'] = $_POST['port'];
 }
 
+if (isset($_POST['locale'])) {
+	$_SESSION['Install']['Locale'] = $_POST['locale'];
+}
+
 $_SESSION['MaxLogoSize'] = 10 * 1024;		// Limit logo file size.
 $PathToRoot = '..';
 $CompanyPath = $PathToRoot. '/companies';
@@ -49,8 +53,17 @@ if (!isset($_SESSION['Install']['OperatingSystem'])) {
 	$_SESSION['Install']['DatabasePort'] = 0;
 	$_SESSION['Install']['UserID'] = 'admin';
 	$_SESSION['Install']['Password'] = 'kwamoja';
+	$_SESSION['Install']['Locale'] = 'de_DE.UTF-8';
 }
-var_dump($_SESSION['Install']);
+
+$LocaleSet = setlocale (LC_MESSAGES, $_SESSION['Install']['Locale']);
+echo 'xx'.$LocaleSet.'zz';
+putenv('LANG=' . $_SESSION['Install']['Locale']);
+putenv('LANGUAGE=' . $_SESSION['Install']['Locale']);
+bindtextdomain ('messages', 'locale');
+textdomain ('messages');
+bind_textdomain_codeset('messages', 'UTF-8');
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -63,23 +76,20 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.or
 </head>
 <body>';
 
-echo '<div id="container">
-		<img id="vbanner" src="../css/VerticalBanner.png" />';
+echo '<table class="main">
+		<tr>
+			<td rowspan="2">
+				<img id="vbanner" src="../css/VerticalBanner.png" />
+			</td>
+			<td>';
 
 // Introductory screen.
-if ($_POST['submit']==0) {
-	include('Page0.php');
-} // Introductory screen
+include('Page' . $_POST['submit'] . '.php');
 
-// Check all the settings
-if ($_POST['submit']==1) {
-	include('Page1.php');
-} // Check all the settings
+echo '</td>
+	</tr>';
 
-// Database settings
-if ($_POST['submit']==2) {
-	include('Page2.php');
-} // Database settings
+echo '</table>';
 
 echo '</body>
 	</html>';
