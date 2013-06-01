@@ -27,6 +27,14 @@ if (isset($_POST['host'])) {
 	$_SESSION['Install']['DatabaseHost'] = $_POST['host'];
 }
 
+if (isset($_POST['user'])) {
+	$_SESSION['Install']['DatabaseUser'] = $_POST['user'];
+}
+
+if (isset($_POST['password'])) {
+	$_SESSION['Install']['DatabasePassword'] = $_POST['password'];
+}
+
 if (isset($_POST['port'])) {
 	$_SESSION['Install']['DatabasePort'] = $_POST['port'];
 }
@@ -50,14 +58,14 @@ if (!isset($_SESSION['Install']['OperatingSystem'])) {
 	$_SESSION['Install']['DatabaseUser'] = 'root';
 	$_SESSION['Install']['DatabasePassword'] = '';
 	$_SESSION['Install']['DatabaseName'] = 'kwamoja';
-	$_SESSION['Install']['DatabasePort'] = 0;
+	$_SESSION['Install']['DatabasePort'] = 3306;
 	$_SESSION['Install']['UserID'] = 'admin';
 	$_SESSION['Install']['Password'] = 'kwamoja';
-	$_SESSION['Install']['Locale'] = 'de_DE.UTF-8';
+	$_SESSION['Install']['Locale'] = 'en_GB.UTF-8';
 }
 
 $LocaleSet = setlocale (LC_MESSAGES, $_SESSION['Install']['Locale']);
-echo 'xx'.$LocaleSet.'zz';
+
 putenv('LANG=' . $_SESSION['Install']['Locale']);
 putenv('LANGUAGE=' . $_SESSION['Install']['Locale']);
 bindtextdomain ('messages', 'locale');

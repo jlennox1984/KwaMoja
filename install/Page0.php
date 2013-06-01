@@ -2,7 +2,7 @@
 
 include('locale/LanguagesArray.php');
 
-//echo '	<a id="kwamoja_logo" href="http://www.kwamoja.com" target="_blank"><img src="../companies/logo.png" /></a>';
+echo '<a id="kwamoja_logo" href="http://www.kwamoja.com" target="_blank"><img src="../companies/logo.png" /></a>';
 echo '<h2>
 		<b>
 			<u>' .  _('Select the Language for this install') . '</u>
@@ -15,7 +15,11 @@ echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-
 				<select name="locale" id="LanguageSelect">';
 
 foreach ($LanguagesArray as $Locale=>$Name) {
-	echo '<option value="' . $Locale . '">' . $Name . '</option>';
+	if ($_SESSION['Install']['Locale'] == $Locale) {
+		echo '<option selected="selected" value="' . $Locale . '">' . $Name . '</option>';
+	} else {
+		echo '<option value="' . $Locale . '">' . $Name . '</option>';
+	}
 }
 
 echo '</select>

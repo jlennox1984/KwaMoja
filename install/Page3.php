@@ -1,6 +1,5 @@
 <?php
 
-
 echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '" method="post">
 		<table cellpadding="3" cellspacing="0" align="center" width="75%">
 			<tr>
@@ -43,14 +42,39 @@ echo '<tr>
 		<td><input type="password" name="password" value="' . $_SESSION['Install']['DatabasePassword'] . '" /></td>
 	</tr>';
 echo '<tr>
-		<td>' . _('Database/Company name') . '</td>
+		<td>' . _('Company name') . '</td>
 		<td><input type="text" name="company" value="' . $_SESSION['Install']['DatabaseName'] . '"></td>
-		<td><input type="checkbox" name="UseExisting" value="UseExisting">' . _('Use existing database with this name?') . '<br />
-			' . _('*WARNING* - All tables will be deleted') . '</td>
+		<td>' . _('*WARNING* - If there is an existing company') . '<br />
+			' . _('with this name, then all tables will be deleted') . '</td>
+	</tr>';
+
+if (isset($_POST['TestDB'])) {
+	if ($_SESSION['Install']['DatabaseType'] == 'mysqli' or $_SESSION['Install']['DatabaseType'] == 'mariadb') {
+		$db = mysqli_connect($_SESSION['Install']['DatabaseHost'],
+							$_SESSION['Install']['DatabaseUser'],
+							$_SESSION['Install']['DatabasePassword'],
+							'',
+							$_SESSION['Install']['DatabasePort']);
+		if (mysqli_connect_errno($db)) {
+			$DBTestResult = '<td class="bad">' . _('Connection Failure') . '</td>';
+		} else {
+			$DBTestResult = '<td class="good">' . _('Connection Success') . '</td>';
+		}
+	} else {
+		$DBTestResult = '<td class="bad">' . _('Connection Failure') . '</td>';
+	}
+
+} else {
+	$DBTestResult = '';
+}
+
+echo '<tr>
+		<td align="right"><button id="navigate" name="submit" value="3">' . _('Test database connection') . '</button></td>
+		' . $DBTestResult . '
+		<input type="hidden" name="TestDB" value="True" />
 	</tr>';
 echo '</table>';
-echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') . '" method="post">
-		<tr>
+echo '<tr>
 			<td class="button_bar"><button id="navigate" name="submit" value="2">&lt;&lt;&nbsp;&nbsp;' . _('Go Back') . '</button>
 			<button id="navigate" name="submit" value="4">' . _('Continue') . '&nbsp;&nbsp;&gt;&gt;</button></td>
 		</tr>
